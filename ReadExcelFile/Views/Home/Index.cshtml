@@ -1,0 +1,64 @@
+﻿@{
+    //ViewBag.Title = "Home Page";
+}
+
+<div class="row" style="margin-top:5%">
+    <div class="form-group col-md-4">
+        <input type="file" class="form-control" id="files" multiple />
+    </div>
+    <div class="form-group col-md-4">
+        <input type="button" id="btnUpload" class="btn btn-info" value="Upload Files" />
+    </div>
+</div>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <tr>
+            <th>Clusters</th>
+        </tr>
+        @*<tbody></tbody>*@
+    </table>
+    @if (ViewBag.Base64String != null)
+    {
+        <hr />
+        <img alt="" src="@ViewBag.Base64String" />
+    }
+</div>
+
+<script>
+    $(document).on('click', '#btnUpload', function () {
+        if (window.FormData !== undefined) {
+            var fileUpload = $("#files").get(0);
+            var files = fileUpload.files;
+            var fileData = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                fileData.append(files[i].name, files[i]);
+            }
+            fileData.append('username', 'Dheeraj');
+            $.ajax({
+                url: '/Home/Uploads',
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: fileData,
+                success: function (result) {
+                    var html = "";
+                    $.each(result, function (index, item) {
+                        html += '<tr>';
+                        html += '<td>' + item + '</td>';
+                        html += '</tr>';
+                    });
+                    html += '<tr>';
+                    html += '<td><img src="../Uploads/graph.png" /></td>';
+                    html += '</tr>';
+
+                    $('tbody').append(html);
+                },
+                error: function (err) {
+                    alert(err.statusText);
+                }
+            });
+        } else {
+            alert("FormData is not supported in the browser.");
+        }
+    });
+</script>
